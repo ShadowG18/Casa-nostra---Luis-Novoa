@@ -1,0 +1,7 @@
+id,name,last_name,gender,age,id_boss,is_dead,in_jail,was_boss,is_boss
+1,Don Vito,Corleone,M,65,0,0,0,0,1
+2,Sonny,Corleone,M,35,1,1,0,0,0
+3,Michael,Corleone,M,30,1,0,0,0,1
+4,Clemenza,Caporegime,M,50,2,0,1,0,0
+6,Rocco,Lampone,M,45,2,1,1,0,0
+5,Al,Neri,M,40,4,1,1,0,1
