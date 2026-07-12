@@ -65,9 +65,9 @@ private:
                  << " (ID: " << nodo->id << ")";
                  
                 if (nodo->is_boss) cout << " [JEFE ACTUAL]";
-	            if (nodo->is_successor) cout << " [SUCESOR]";
+	            if (nodo->is_successor && !nodo->is_dead) cout << " [SUCESOR]";
 	            if (nodo->is_dead) cout << " [DIFUNTO]";
-	            if (nodo->in_jail) cout << " [EN PRISION]";
+	            if (nodo->in_jail && !nodo->is_dead) cout << " [EN PRISION]";
 	            
 	            cout << "\n";
 	            
@@ -86,14 +86,14 @@ public:
     void insertar_Miembro(int id, string name, string last_name, char gender, int age, 
                       int id_boss, bool is_dead, bool in_jail, bool was_boss, bool is_boss) {
         
-
-
+		bool actual_in_jail = in_jail;
+		bool actual_is_dead = is_dead;
 		bool actual_is_boss = is_boss;
 		bool actual_is_successor = false;
 		
 		// LOGICA DE VALIDACION DEL JEFE ACTUAL
 		if (actual_is_boss) {
-		    if (!Jefe_Principal) {
+		    if (!Jefe_Principal && !actual_is_dead  && !actual_in_jail) {
 		        // Al leer el csv mientras no haya un jefe principal ya, entonces el primer miembro que tenga is_boss en 1 sera el jefe actual
 		        Jefe_Principal = true;
 		    } else {
