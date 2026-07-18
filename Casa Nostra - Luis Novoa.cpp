@@ -136,6 +136,51 @@ public:
         imprimir_Arbol(root, "");
         cout << "---------------------------------------\n";
     }
+    
+    void modificar_Miembro(int id_buscar) {
+        // Reutilizamos la funcion de busqueda DFS que tenemos en vez de hacer una nueva
+        Miembro* encontrado = encontrar_Jefe(root, id_buscar);
+
+        if (encontrado == nullptr) {
+            cout << "Error: No se encontro ningun miembro con la ID " << id_buscar << ".\n";
+            return;
+        }
+
+        cout << "\n=== Modificando Miembro (ID: " << encontrado->id << ") ===\n";
+
+        // Variables temporales para la entrada de datos
+        int temp_int;
+        string temp_str;
+        char temp_char;
+
+        cout << "Nombre actual [" << encontrado->name << "]. Nuevo nombre: ";
+        cin >> encontrado->name;
+
+        cout << "Apellido actual [" << encontrado->last_name << "]. Nuevo apellido: ";
+        cin >> encontrado->last_name;
+
+        cout << "Genero actual [" << encontrado->gender << "]. Nuevo genero (M/F): ";
+        cin >> temp_char;
+        encontrado->gender = temp_char;
+
+        cout << "Edad actual [" << encontrado->age << "]. Nueva edad: ";
+        cin >> temp_int;
+        encontrado->age = temp_int;
+
+        cout << "Esta muerto? (1 = Si, 0 = No) [" << encontrado->is_dead << "]: ";
+        cin >> temp_int;
+        encontrado->is_dead = (temp_int == 1);
+
+        cout << "Esta en prision? (1 = Si, 0 = No) [" << encontrado->in_jail << "]: ";
+        cin >> temp_int;
+        encontrado->in_jail = (temp_int == 1);
+
+        cout << "Es sucesor? (1 = Si, 0 = No) [" << encontrado->is_successor << "]: ";
+        cin >> temp_int;
+        encontrado->is_successor = (temp_int == 1);
+
+        cout << "\nMiembro modificado exitosamente.\n";
+    }
 };
 
 // Funcion independiente para leer el CSV y llenar el arbol
@@ -209,6 +254,21 @@ int main() {
 
     // Mostramos la jerarquia final
     familia.Mostrar_jerarquia();
+    int miembro_modificar; 
+    int continuar;
+    
+    do {
+    
+    cout << "Ingrese la Id del miembro que quiera modificar" << endl;
+    cin >> miembro_modificar;
+    familia.modificar_Miembro(miembro_modificar);
+
+    familia.Mostrar_jerarquia();
+    
+    cout << "Desea modificar otro miembro? (Pon 0 para terminar el programa)" << endl;
+    cin >> miembro_modificar;
+    
+	} while (continuar !=0);
 
     return 0;
 }
