@@ -76,10 +76,29 @@ private:
         }
     }
 
+    // Busca al primer sucesor que siga vivo (Izquierda primero, luego Derecha)
+    Miembro* buscar_Sucesor(Miembro* nodo) {
+        if (nodo == nullptr) return nullptr;
+        
+        // Retorna el nodo si es sucesor
+        if (nodo->is_successor && !nodo->is_dead) return nodo;
+
+        // Busca primero en la rama izquierda
+        Miembro* izq = buscar_Sucesor(nodo->left);
+        if (izq != nullptr) return izq;
+
+        // Si no esta en la izquierda, se busca en la derecha
+        return buscar_Sucesor(nodo->right);
+    }
+
 public:
     Arbol_Mafia() {
         root = nullptr;
         Jefe_Principal = false;
+    }
+    
+    Miembro* obtener_Raiz() {
+        return root;
     }
 	
 	// Funcion para insertar miembros al arbol
@@ -178,9 +197,90 @@ public:
         cout << "Es sucesor? (1 = Si, 0 = No) [" << encontrado->is_successor << "]: ";
         cin >> temp_int;
         encontrado->is_successor = (temp_int == 1);
+        
+        if (encontrado->is_boss) {
+            cout << "\n--- Evaluando estado del Jefe Actual ---\n";
+            
+            if (encontrado->is_dead) {
+                cout << "El jefe ha muerto. Se necesita buscar un nuevo reemplazo.\n";
+                encontrado->is_boss = false;
+                encontrado->was_boss = true;
+                actualizar_Jefe();
+            } 
+            else if (encontrado->age > 75 || encontrado->in_jail) {
+                
+                if (encontrado->age > 75) cout << "El jefe se retira debido a su edad avanzada (Edad:" << encontrado->age << ").\n";
+                else cout << "El jefe fue arrestado y esta en prision.\n";
+                
+                encontrado->is_boss = false;
+                encontrado->was_boss = true;
+                cout << "El puesto de jefe ha quedado vacante, se necesita buscar un nuevo jefe.\n";
+                actualizar_Jefe();
+            } else{
+				cout << "El jefe actual todavia esta en buena condicion para ser jefe.\n";
+			}
+            
+        }
 
         cout << "\nMiembro modificado exitosamente.\n";
     }
+    
+    // Funcion para actualizar al jefe y reacomodar el arbol si es necesario
+    void actualizar_Jefe() {
+        Miembro* jefe_actual = obtener_Raiz();
+
+        if (jefe_actual == nullptr) return;
+
+        Miembro* sucesor = buscar_Sucesor(root);
+
+        if (sucesor == nullptr) {
+            cout << "El puesto de jefe esta libre pero no se encontro ningun sucesor vivo disponible.\n";
+            return;
+        }
+
+        cout << "\n=== ACTUALIZACION DE MANDO ===\n";
+        cout << "El sucesor " << sucesor->name << " asume el mando. Reacomodando el arbol...\n";
+
+        // Variables temporales para guardar los datos del sucesor
+        int temp_id = sucesor->id;
+        string temp_name = sucesor->name;
+        string temp_last_name = sucesor->last_name;
+        char temp_gender = sucesor->gender;
+        int temp_age = sucesor->age;
+        bool temp_in_jail = sucesor->in_jail;
+        int temp_id_boss = sucesor->id_boss;
+
+        // 1. El nodo inferior (donde estaba el sucesor) recibe los datos del jefe anterior
+        sucesor->id = jefe_actual->id;
+        sucesor->name = jefe_actual->name;
+        sucesor->last_name = jefe_actual->last_name;
+        sucesor->gender = jefe_actual->gender;
+        sucesor->age = jefe_actual->age;
+        sucesor->in_jail = jefe_actual->in_jail;
+        sucesor->id_boss = jefe_actual->id_boss;
+        
+        // El anterior jefe ahora queda marcado como que ya paso por el cargo
+        sucesor->is_dead = jefe_actual->is_dead; 
+        sucesor->is_boss = false;
+        sucesor->was_boss = true; 
+        sucesor->is_successor = false;
+
+        // 2. El nodo superior (la cima) recibe los datos del sucesor
+        jefe_actual->id = temp_id;
+        jefe_actual->name = temp_name;
+        jefe_actual->last_name = temp_last_name;
+        jefe_actual->gender = temp_gender;
+        jefe_actual->age = temp_age;
+        jefe_actual->in_jail = temp_in_jail;
+        jefe_actual->id_boss = temp_id_boss; // El nuevo jefe mantiene su id_boss original
+
+        jefe_actual->is_dead = false; // El nuevo jefe debe estar vivo
+        jefe_actual->is_boss = true; 
+        jefe_actual->was_boss = false;
+        jefe_actual->is_successor = false;
+
+        cout << "Arbol reacomodado exitosamente.\n\n";
+    };
 };
 
 // Funcion independiente para leer el CSV y llenar el arbol
