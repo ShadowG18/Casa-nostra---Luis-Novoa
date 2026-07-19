@@ -405,7 +405,7 @@ int main() {
     Arbol_Mafia familia;
 
     // Llamamos a la funcion 
-    cargarDesdeCSV(familia, "familia_data.csv");
+    cargarDesdeCSV(familia, "../bin/familia_data.csv");
 
     familia.Menu();
 
